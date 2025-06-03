@@ -2,6 +2,7 @@ package com.tecsup.demo.aop;
 
 import com.tecsup.demo.domain.entities.Auditoria;
 import com.tecsup.demo.domain.entities.Curso;
+import com.tecsup.demo.domain.entities.Alumno;
 import com.tecsup.demo.domain.persistence.AuditoriaDao;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -49,23 +50,52 @@ public class LogginAspecto {
     public void auditoria(JoinPoint joinPoint) throws Throwable {
         Logger logger = LoggerFactory.getLogger(joinPoint.getTarget().getClass());
         String metodo = joinPoint.getSignature().getName();
+        String nombreTabla = "";
         Integer id = null;
+
         if(metodo.startsWith("guardar")){
             Object[] parametros = joinPoint.getArgs();
-            Curso curso = (Curso)parametros[0];
-            id = curso.getId();
+            Object entidad = parametros[0];
+
+            // Determinar el tipo de entidad y extraer el ID
+            if(entidad instanceof Curso) {
+                Curso curso = (Curso) entidad;
+                id = curso.getId();
+                nombreTabla = "cursos";
+            } else if(entidad instanceof Alumno) {
+                Alumno alumno = (Alumno) entidad;
+                id = alumno.getId();
+                nombreTabla = "alumnos";
+            }
         }
         else if(metodo.startsWith("editar")){
             Object[] parametros = joinPoint.getArgs();
             id = (Integer)parametros[0];
+
+            // Determinar la tabla por el nombre del controlador
+            String nombreControlador = joinPoint.getTarget().getClass().getSimpleName();
+            if(nombreControlador.contains("Curso")) {
+                nombreTabla = "cursos";
+            } else if(nombreControlador.contains("Alumno")) {
+                nombreTabla = "alumnos";
+            }
         }
         else if(metodo.startsWith("eliminar")){
             Object[] parametros = joinPoint.getArgs();
             id = (Integer)parametros[0];
+
+            // Determinar la tabla por el nombre del controlador
+            String nombreControlador = joinPoint.getTarget().getClass().getSimpleName();
+            if(nombreControlador.contains("Curso")) {
+                nombreTabla = "cursos";
+            } else if(nombreControlador.contains("Alumno")) {
+                nombreTabla = "alumnos";
+            }
         }
+
         String traza = "tx[" + tx + "] - " + metodo;
-        logger.info(traza + "(): registrando auditoria...");
-        auditoriaDao.save(new Auditoria("cursos", id, Calendar.getInstance().getTime(),
+        logger.info(traza + "(): registrando auditoria para tabla " + nombreTabla + "...");
+        auditoriaDao.save(new Auditoria(nombreTabla, id, Calendar.getInstance().getTime(),
                 "usuario", metodo));
     }
 }
