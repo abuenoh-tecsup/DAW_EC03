@@ -45,7 +45,6 @@ public class AlumnoController {
         return "redirect:listarAlumnos";
     }
 
-    // Form para editar
     @RequestMapping(value="/formAlumno/{id}")
     public String editar(@PathVariable(value="id") Integer id, Map<String, Object> model) {
         Alumno alumno = null;
@@ -59,7 +58,6 @@ public class AlumnoController {
         return "formAlumno";
     }
 
-    // Eliminar
     @RequestMapping(value="/eliminarAlumno/{id}")
     public String eliminar(@PathVariable(value="id") Integer id) {
         if(id > 0) {
@@ -68,7 +66,6 @@ public class AlumnoController {
         return "redirect:/listarAlumnos";
     }
 
-    // Ver
     @RequestMapping(value="/verAlumnos")
     public String ver(Model model) {
         model.addAttribute("alumnos", alumnoService.listar());

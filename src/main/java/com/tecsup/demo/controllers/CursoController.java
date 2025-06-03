@@ -46,7 +46,6 @@ public class CursoController {
         return "redirect:listar";
     }
 
-    //Form para editar
     @RequestMapping(value="/form/{id}")
     public String editar(@PathVariable(value="id") Integer id, Map<String, Object> model) {
 
@@ -61,7 +60,6 @@ public class CursoController {
         return "form";
     }
 
-    //Eliminar
     @RequestMapping(value="/eliminar/{id}")
     public String eliminar(@PathVariable(value="id") Integer id) {
 
@@ -71,7 +69,6 @@ public class CursoController {
         return "redirect:/listar";
     }
 
-    //Ver
     @RequestMapping(value="/ver")
     public String ver(Model model) {
         model.addAttribute("cursos", cursoService.listar());
